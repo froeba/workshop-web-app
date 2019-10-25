@@ -1,8 +1,7 @@
 {
-  "name": "Start on Heroku: Node.js",
+  "name": "Pelion starter app",
   "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
+  "repository": "https://github.com/ARMmbed/aiot-workshop-web-app",
   "keywords": ["node", "express", "heroku"],
-  "image": "heroku/nodejs",
+  "image": "heroku/nodejs"
 }

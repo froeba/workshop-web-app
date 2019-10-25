@@ -1,10 +1,11 @@
 const express = require("express");
-const path = require("path");
-const PORT = process.env.PORT || 5000;
-const { Pool } = require("pg");
 const moment = require("moment");
+const path = require("path");
+const { Pool } = require("pg");
 const Sdk = require("mbed-cloud-sdk");
+
 const connect = new Sdk.ConnectApi();
+const PORT = process.env.PORT || 5000;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -84,7 +85,7 @@ express()
     next();
   })
   .get("/values", async (req, res) => {
-    const query = "select * from resource_values order by time desc;";
+    const query = "select * from resource_values order by time desc limit 5000;";
     try {
       res.send(await getQuery(query));
     } catch (err) {

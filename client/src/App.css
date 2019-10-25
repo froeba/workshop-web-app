@@ -1,0 +1,21 @@
+.App {
+  text-align: center;
+}
+body {
+  background-color: #282c34;
+}
+.App-header {
+  max-width: 100%;
+  min-height: 200px;
+  display: grid;
+  margin: 10px;
+  padding: 10px;
+  gap: 50px 50px;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+}
+
+h3 {
+  color: #fff;
+}

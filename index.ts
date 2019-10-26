@@ -1,22 +1,30 @@
-const express = require("express");
-const moment = require("moment");
-const path = require("path");
-const { Pool } = require("pg");
-const Sdk = require("mbed-cloud-sdk");
+import express from "express";
+import { ConnectApi, DeviceRepository } from "mbed-cloud-sdk";
+import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
+import moment from "moment";
+import path from "path";
+import { Pool } from "pg";
 
-const connect = new Sdk.ConnectApi();
+const connect = new ConnectApi();
+
 const PORT = process.env.PORT || 5000;
+const webhookURI = process.env.HOSTNAME + "callback";
+const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
+const deviceId = (process.env.DEVICE_ID || "*").split(",");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 });
 
+interface Results {
+  results: any[];
+}
 const getQuery = async (query = "select * from resource_values;") => {
-  const results = { results: undefined };
+  const results: Results = { results: [] };
   const client = await pool.connect();
   const result = await client.query(query);
-  results.results = result ? result.rows : undefined;
+  results.results = result ? result.rows : [];
   client.release();
   return results;
 };
@@ -32,30 +40,26 @@ const main = async () => {
     console.log("Table schema updated");
   } catch (err) {
     console.error(err);
-    res.send("Error " + err);
   }
-  const webhookURI = process.env.HOSTNAME + "callback";
   console.log("Updating Webhook and subscriptions - " + webhookURI);
   try {
-    connect.handleNotifications = true;
     await connect.updateWebhook(webhookURI, {}, true);
     connect.subscribe
       .resourceValues(
         {
-          deviceId: "*",
-          resourcePaths: ["/3303/*", "/3202/0/5600"]
+          deviceId,
+          resourcePaths
         },
         "OnValueUpdate"
       )
       .addListener(n => notification(n));
   } catch (err) {
     console.error(err);
-    res.send("Error " + err);
   }
   console.log("Webhook and subscriptions updated");
 };
 
-const notification = async ({ deviceId, path, payload }) => {
+const notification = async ({ deviceId, path, payload }: NotificationData) => {
   const text =
     "INSERT INTO resource_values(device_id, path, time, value) VALUES($1, $2, to_timestamp($3 / 1000.0), $4) RETURNING *";
   const values = [deviceId, path, Date.now(), payload];
@@ -73,11 +77,10 @@ const notification = async ({ deviceId, path, payload }) => {
 };
 
 express()
-  .use(express.static(path.join(__dirname, "public")))
   .use(express.static(path.join(__dirname, "client/build")))
   .use(express.json())
   .use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
@@ -85,7 +88,8 @@ express()
     next();
   })
   .get("/values", async (req, res) => {
-    const query = "select * from resource_values order by time desc limit 5000;";
+    const query =
+      "select * from resource_values order by time desc limit 5000;";
     try {
       res.send(await getQuery(query));
     } catch (err) {
@@ -102,7 +106,7 @@ express()
     }
   })
   .get("/devices", async (req, res) => {
-    const deviceList = new Sdk.DeviceRepository().list({
+    const deviceList = new DeviceRepository().list({
       maxResults: 10,
       filter: { state: "registered" }
     });

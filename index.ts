@@ -5,7 +5,7 @@ import moment from "moment";
 import path from "path";
 import { Pool } from "pg";
 
-const connect = new ConnectApi();
+const connect = new ConnectApi({ autostartNotifications: false });
 
 const PORT = process.env.PORT || 5000;
 const webhookURI = process.env.HOSTNAME + "callback";

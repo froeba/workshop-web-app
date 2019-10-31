@@ -103,7 +103,10 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <header className="App-header">{devices && showDevices(devices)}</header>
+      <header className="App-header">
+        {showDevices(devices)}
+        {values.length === 0 && <h1>No data available</h1>}
+      </header>
     </div>
   );
 };

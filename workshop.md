@@ -44,9 +44,10 @@ Manage App -> Goto Settings -> Config Vars
 | HOSTNAME               | https://`APP`.herokuapp.com/ |
 
 If `APIHOST` is not default production account:
-|Key|Value|
-|-----|---|
-|MBED_CLOUD_SDK_HOST| `APIHOST`
+
+| Key                 | Value     |
+| ------------------- | --------- |
+| MBED_CLOUD_SDK_HOST | `APIHOST` |
 
 ## Provision a Database
 

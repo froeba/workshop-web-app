@@ -3,6 +3,7 @@
 }
 body {
   background-color: #282c34;
+  color: #fff;
 }
 .App-header {
   max-width: 100%;
@@ -16,6 +17,6 @@ body {
   justify-content: center;
 }
 
-h3 {
+h1, h2, h3 {
   color: #fff;
 }

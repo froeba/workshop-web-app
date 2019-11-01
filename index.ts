@@ -11,7 +11,8 @@ const connect = new ConnectApi({
 });
 
 const PORT = process.env.PORT || 5000;
-const webhookURI = process.env.HOSTNAME + "callback";
+const hostName = process.env.HOSTNAME || "localhost";
+const webhookURI = `${hostName.slice(-1) === "/" ? hostName : hostName + "/"}callback`;
 const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
 const deviceId = (process.env.DEVICE_ID || "*").split(",");
 

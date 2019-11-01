@@ -50,6 +50,7 @@ const main = async () => {
   }
   console.log("Updating Webhook and subscriptions - " + webhookURI);
   try {
+    await connect.deletePresubscriptions();
     connect.subscribe
       .resourceValues(
         {

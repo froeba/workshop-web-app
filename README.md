@@ -1,4 +1,5 @@
 # Sample Pelion Web app
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 A barebones Node.js app using [Express 4](http://expressjs.com/).
 
@@ -26,3 +27,7 @@ $ heroku open
 or
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+## App Architecture
+
+![](docs/)

@@ -5,7 +5,10 @@ import moment from "moment";
 import path from "path";
 import { Pool } from "pg";
 
-const connect = new ConnectApi({ autostartNotifications: false });
+const connect = new ConnectApi({
+  forceClear: true,
+  autostartNotifications: false
+});
 
 const PORT = process.env.PORT || 5000;
 const webhookURI = process.env.HOSTNAME + "callback";
@@ -36,14 +39,16 @@ const main = async () => {
     const query =
       "create table if not exists resource_values ( id serial, device_id varchar(50), path varchar(50), time timestamp, value text );";
     await client.query(query);
-    client.release();
     console.log("Table schema updated");
+    // console.log("Truncating data");
+    // await client.query("truncate resource_values;");
+    client.release();
+    // console.log("Table truncated");
   } catch (err) {
     console.error(err);
   }
   console.log("Updating Webhook and subscriptions - " + webhookURI);
   try {
-    await connect.updateWebhook(webhookURI, {}, true);
     connect.subscribe
       .resourceValues(
         {
@@ -53,6 +58,7 @@ const main = async () => {
         "OnValueUpdate"
       )
       .addListener(n => notification(n));
+    await connect.updateWebhook(webhookURI, {}, true);
   } catch (err) {
     console.error(err);
   }

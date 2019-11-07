@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const getValues = () => {
     superagent.get("/values").then(result => {
       const val: ResourceValue[] = result.body.results.map((a: any) => ({
-        ...a,
+        ...a, 
         value: parseFloat(a.value),
         time: new Date(a.time),
         epoch: new Date(a.time).valueOf()
@@ -84,7 +84,7 @@ const App: React.FC = () => {
     const margin = Math.ceil((max - min) * 0.1);
 
     return (
-      <ResponsiveContainer aspect={16 / 9} minHeight={200}>
+      <ResponsiveContainer aspect={21 / 9} minHeight={200}>
         <LineChart data={values}>
           <Line dot={false} type="monotone" dataKey="value" />
           <XAxis

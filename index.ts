@@ -97,7 +97,7 @@ express()
   })
   .get("/values", async (req, res) => {
     const query =
-      "select * from resource_values order by time desc limit 5000;";
+      "select * from resource_values order by time desc limit 10000;";
     try {
       res.send(await getQuery(query));
     } catch (err) {

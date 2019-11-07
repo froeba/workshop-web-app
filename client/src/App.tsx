@@ -91,6 +91,7 @@ const App: React.FC = () => {
           matchPath && resourceNames[matchPath]
             ? resourceNames[matchPath]
             : res;
+        const [val1, val2] = paths[res];
         return (
           <div className="device" key={res}>
             <h3 title={deviceId}>
@@ -103,9 +104,11 @@ const App: React.FC = () => {
                   <span
                     style={{
                       color:
-                        paths[res][0].value > paths[res][1].value
-                          ? "green"
-                          : "red"
+                        val1 && val2
+                          ? val1.value > val2.value
+                            ? "green"
+                            : "red"
+                          : "white"
                     }}
                   >
                     {paths[res][0].value.toFixed(1)}

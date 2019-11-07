@@ -1,5 +1,7 @@
 # Sample Pelion Web app
 
+[Demo Deployment](https://mbed-workshop.herokuapp.com/)
+
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 A barebones Node.js app using [Express 4](http://expressjs.com/).

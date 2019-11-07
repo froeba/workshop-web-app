@@ -10,8 +10,6 @@ import {
 } from "recharts";
 import superagent from "superagent";
 import "./App.css";
-import { resolvePlugin } from "@babel/core";
-import { access } from "fs";
 
 const deviceNames: { [index: string]: string } = {
   "016981016ceb00000000000100100100": "Disco 1",
@@ -72,6 +70,7 @@ const App: React.FC = () => {
     devices[v.device_id][v.path].push(v);
     return v;
   });
+  console.log(Object.keys(devices));
 
   const showDevices = (d: Devices) =>
     Object.keys(d)
@@ -101,9 +100,16 @@ const App: React.FC = () => {
               <div className="graph">{showPath(paths[res])}</div>
               <div className="value">
                 <h1>
-                  Value
-                  <br />
-                  {paths[res][paths[res].length - 1].value.toFixed(1)}
+                  <span
+                    style={{
+                      color:
+                        paths[res][0].value > paths[res][1].value
+                          ? "green"
+                          : "red"
+                    }}
+                  >
+                    {paths[res][0].value.toFixed(1)}
+                  </span>
                 </h1>
               </div>
             </div>

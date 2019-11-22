@@ -25,6 +25,8 @@ body {
   grid-template-areas: "graph value";
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: #fff;
 }

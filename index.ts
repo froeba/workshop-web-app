@@ -1,5 +1,5 @@
 import express from "express";
-import { ConnectApi, DeviceRepository } from "mbed-cloud-sdk";
+import { ConnectApi } from "mbed-cloud-sdk";
 import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 import moment from "moment";
 import path from "path";
@@ -7,7 +7,7 @@ import { Pool } from "pg";
 
 const connect = new ConnectApi({
   forceClear: true,
-  autostartNotifications: false
+  autostartNotifications: false,
 });
 
 const PORT = process.env.PORT || 5000;
@@ -18,12 +18,13 @@ const deviceId = (process.env.DEVICE_ID || "*").split(",");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: true
+  ssl: true,
 });
 
 interface Results {
   results: any[];
 }
+
 const getQuery = async (query = "select * from resource_values;") => {
   const results: Results = { results: [] };
   const client = await pool.connect();
@@ -40,11 +41,7 @@ const main = async () => {
     const query =
       "create table if not exists resource_values ( id serial, device_id varchar(50), path varchar(50), time timestamp, value text );";
     await client.query(query);
-    console.log("Table schema updated");
-    // console.log("Truncating data");
-    // await client.query("truncate resource_values;");
     client.release();
-    // console.log("Table truncated");
   } catch (err) {
     console.error(err);
   }
@@ -55,7 +52,7 @@ const main = async () => {
       .resourceValues(
         {
           deviceId,
-          resourcePaths
+          resourcePaths,
         },
         "OnValueUpdate"
       )
@@ -77,7 +74,6 @@ const notification = async ({ deviceId, path, payload }: NotificationData) => {
     const t = moment(time)
       .format("lll")
       .toString();
-
     console.log(`${t} ${id} ${device_id} ${path} ${value}`);
   } catch (err) {
     console.log(err.stack);
@@ -89,48 +85,24 @@ express()
   .use(express.json())
   .use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   })
   .get("/values", async (req, res) => {
-    const query =
-      "select * from resource_values order by time desc limit 10000;";
+    const query = "select * from resource_values order by time desc limit 10000;";
     try {
       res.send(await getQuery(query));
     } catch (err) {
       res.send("Error" + err);
     }
-  })
-  .get("/db", async (req, res) => {
-    const query =
-      "select device_id, path, count(value), avg(cast(value as float)) from resource_values group by device_id, path;";
-    try {
-      res.send(await getQuery(query));
-    } catch (err) {
-      res.send("Error" + err);
-    }
-  })
-  .get("/devices", async (req, res) => {
-    const deviceList = new DeviceRepository().list({
-      maxResults: 10,
-      filter: { state: "registered" }
-    });
-    const results = [];
-    for await (const device of deviceList) {
-      results.push(device);
-    }
-    res.send(results);
   })
   .all("/callback", async (req, res) => {
     try {
-      if (req.body && req.body.notifications) {
+      if (req.body?.notifications) {
         connect.notify(req.body);
       }
     } catch (err) {
-      console.log(err.stack);
+      console.log(err.stack); 
     } finally {
       res.sendStatus(204);
     }

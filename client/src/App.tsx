@@ -19,7 +19,7 @@ const App: React.FC = () => {
 
   const getValues = () => {
     superagent
-      .get("https://mbed-workshop.herokuapp.com/values")
+      .get("/values")
       .then(parseValues)
       .catch(() => window.setTimeout(getValues, PAUSE_FOR_POLL));
   };

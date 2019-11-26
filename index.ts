@@ -67,7 +67,7 @@ const main = async () => {
     console.error(err);
   }
   console.log("Webhook and subscriptions updated");
-  getValues(connect);
+  getValues(connect, notification);
 };
 
 const notification = async ({ deviceId, path, payload }: NotificationData) => {

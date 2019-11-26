@@ -1,10 +1,12 @@
 import { ConnectApi, DeviceRepository } from "mbed-cloud-sdk";
+import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 const directory = new DeviceRepository();
 
 const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
 const deviceId = (process.env.DEVICE_ID || "*").split(",");
 
-export const getValues = async (connect: ConnectApi) => {
+export const getValues = async (connect: ConnectApi, notify: (data: NotificationData) => void) => {
+  console.log("Getting latest resource values");
   let id = undefined;
   if (deviceId.join("") !== "*") {
     id = { in: deviceId };
@@ -18,7 +20,9 @@ export const getValues = async (connect: ConnectApi) => {
           if (path.startsWith(subPath.replace("*", ""))) {
             console.log(id, path);
             try {
-              connect.getResourceValue(id, path);
+              connect.getResourceValue(id, path).then(value => {
+                notify({ deviceId: id, path, payload: value as string });
+              });
             } catch (e) {
               console.error(e);
             }
@@ -27,5 +31,5 @@ export const getValues = async (connect: ConnectApi) => {
       });
     }
   });
-  setTimeout(() => getValues(connect), 1000 * 60 * 5);
+  setTimeout(() => getValues(connect, notify), 1000 * 60 * 5);
 };

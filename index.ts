@@ -16,6 +16,10 @@ const webhookURI = new URL("callback", hostName).toString();
 const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
 const deviceId = (process.env.DEVICE_ID || "*").split(",");
 
+console.log(`HOSTNAME=${hostName}`);
+console.log(`RESOURCE=${resourcePaths.join(",")}`);
+console.log(`DEVICE_ID=${deviceId.join(",")}`);
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,

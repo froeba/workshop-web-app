@@ -71,6 +71,9 @@ const main = async () => {
 };
 
 const notification = async ({ deviceId, path, payload }: NotificationData) => {
+  if (isNaN(payload as number)) {
+    return;
+  }
   const text =
     "INSERT INTO resource_values(device_id, path, time, value) VALUES($1, $2, to_timestamp($3 / 1000.0), $4) RETURNING *";
   const values = [deviceId, path, Date.now(), payload];

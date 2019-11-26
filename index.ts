@@ -1,9 +1,10 @@
 import express from "express";
-import { ConnectApi } from "mbed-cloud-sdk";
+import { ConnectApi, DeviceDirectoryApi } from "mbed-cloud-sdk";
 import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 import moment from "moment";
 import path from "path";
 import { Pool } from "pg";
+import { getValues } from "./src/pollValues";
 
 const connect = new ConnectApi({
   forceClear: true,
@@ -66,6 +67,7 @@ const main = async () => {
     console.error(err);
   }
   console.log("Webhook and subscriptions updated");
+  getValues(connect);
 };
 
 const notification = async ({ deviceId, path, payload }: NotificationData) => {
@@ -102,11 +104,9 @@ express()
   })
   .all("/callback", async (req, res) => {
     try {
-      if (req.body?.notifications) {
-        connect.notify(req.body);
-      }
+      connect.notify(req.body);
     } catch (err) {
-      console.log(err.stack); 
+      console.log(err.stack);
     } finally {
       res.sendStatus(204);
     }

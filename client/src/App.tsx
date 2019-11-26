@@ -19,7 +19,7 @@ const App: React.FC = () => {
 
   const getValues = () => {
     superagent
-      .get("/values")
+      .get("https://mbed-workshop.herokuapp.com/values")
       .then(parseValues)
       .catch(() => window.setTimeout(getValues, PAUSE_FOR_POLL));
   };
@@ -89,7 +89,11 @@ const App: React.FC = () => {
     const max = Math.ceil(values.reduce((a, c) => (a ? (c.value > a ? c.value : a) : c.value), -Infinity));
     const min = Math.floor(values.reduce((a, c) => (c.value < a ? c.value : a), Infinity));
     const margin = Math.ceil((max - min) * 0.1);
-
+    const { time, value, device_id, path } = values[0];
+    const latest = { time, value, id: 0, device_id, path, epoch: Date.now() };
+    values.reverse();
+    values.push(latest);
+    values.reverse();
     return (
       <ResponsiveContainer aspect={21 / 9} minHeight={200}>
         <LineChart data={values}>
@@ -98,6 +102,7 @@ const App: React.FC = () => {
             scale="time"
             dataKey="epoch"
             type="number"
+            tick={false}
             domain={["auto", "auto"]}
             tickFormatter={d => moment(d).format("LTS")}
           />

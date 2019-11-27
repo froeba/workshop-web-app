@@ -4,6 +4,7 @@ const directory = new DeviceRepository();
 
 const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
 const deviceId = (process.env.DEVICE_ID || "*").split(",");
+const POLLING_INTERVAL = 1000 * 60 * 15;
 
 export const getValues = async (connect: ConnectApi, notify: (data: NotificationData) => void) => {
   console.log("Getting latest resource values");
@@ -31,5 +32,5 @@ export const getValues = async (connect: ConnectApi, notify: (data: Notification
       });
     }
   });
-  setTimeout(() => getValues(connect, notify), 1000 * 60 * 5);
+  setTimeout(() => getValues(connect, notify), POLLING_INTERVAL);
 };

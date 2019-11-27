@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import superagent from "superagent";
 import { Devices, Names, Paths, ResourceValue } from ".";
-import "./App.css";
 
 const PAUSE_FOR_POLL = 10 * 1000;
 

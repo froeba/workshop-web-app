@@ -25,4 +25,4 @@ When the resource value on a device changes, the notification channel is updated
 
 The included react app requests all data from the server and visualises this using the [Recharts](http://recharts.org/en-US/) library.
 
-![](https://i.ibb.co/8bwXbLS/web-app-demo.gif)
+![](https://i.ibb.co/syt959z/web-app-demo.gif)

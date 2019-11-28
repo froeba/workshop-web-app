@@ -68,4 +68,4 @@ The app is also available at the website provided. Once the application is confi
 
 - Click `Open App`
 
-![](https://i.ibb.co/8bwXbLS/web-app-demo.gif)
+![](https://i.ibb.co/syt959z/web-app-demo.gif)

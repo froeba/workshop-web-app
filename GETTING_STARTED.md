@@ -37,7 +37,7 @@ Heroku apps provide configuration options through environment variables. These a
 | DEVICE_ID              | Comma separated list of device IDs     | ✓        | \*                                  |
 | RESOURCE               | Comma separated list of resource paths | ✓        | /3303/\*                            |
 
-<br/>
+
 ![](docs/app_config_vars.png)
 
 ## Provision a Database
@@ -48,7 +48,7 @@ This app requires access to a Postgres database to store resource values. Heroku
 1. Navigate to `Resources` -> `Add-ons`
 1. Search for `postgres` and attach a free "Hobby Dev" account
 
-<br/>
+
 ![](docs/app_postgres.png)
 
 ## Check for issues
@@ -59,7 +59,7 @@ The Heroku app deploys into `dynos` which are hosted containers running applicat
 - `More` button --> `View logs`
 - Logs should show no errors
 
-<br/>
+
 ![](docs/app_logs.png)
 
 ## Check deployment

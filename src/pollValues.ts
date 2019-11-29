@@ -1,10 +1,11 @@
 import { ConnectApi, DeviceRepository } from "mbed-cloud-sdk";
 import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
-const directory = new DeviceRepository();
 
 const resourcePaths = (process.env.RESOURCE || "/3303/*").split(",");
 const deviceId = (process.env.DEVICE_ID || "*").split(",");
 const POLLING_INTERVAL = 1000 * 60 * 15;
+
+const directory = new DeviceRepository();
 
 export const getValues = async (connect: ConnectApi, notify: (data: NotificationData) => void) => {
   console.log("Getting latest resource values");

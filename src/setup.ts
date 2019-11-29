@@ -1,7 +1,7 @@
 import { ConnectApi } from "mbed-cloud-sdk";
+import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 import { Pool } from "pg";
 import { getValues } from "./pollValues";
-import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 
 const hostName = process.env.HOSTNAME || "https://localhost";
 const webhookURI = new URL("callback", hostName).toString();

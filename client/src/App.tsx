@@ -68,7 +68,7 @@ const App: React.FC = () => {
         const resourceName = matchPath && resourceNames[matchPath] ? resourceNames[matchPath] : res;
         const [val1, val2] = paths[res];
         const styleColour =
-          val1 && val2 && val1.value !== val2.value ? (val1.value > val2.value ? "green" : "red") : "white";
+          val1 && val2 && val1.value !== val2.value ? (val1.value > val2.value ? "green" : "red") : "black";
         return (
           <div className="device" key={res}>
             <h3 title={deviceId}>
@@ -91,16 +91,15 @@ const App: React.FC = () => {
     const min = Math.floor(values.reduce((a, c) => (c.value < a ? c.value : a), Infinity));
     const margin = Math.ceil((max - min) * 0.1);
     return (
-      <ResponsiveContainer aspect={21 / 9} minHeight={200}>
+      <ResponsiveContainer aspect={4 / 3} minHeight={200}>
         <LineChart data={values}>
           <Line dot={false} type="monotone" dataKey="value" animationEasing="linear" />
           <XAxis
             scale="time"
             dataKey="epoch"
             type="number"
-            tick={false}
             domain={["auto", "auto"]}
-            tickFormatter={d => moment(d).format("LTS")}
+            tickFormatter={d => moment(d).format("LT")}
           />
           <YAxis domain={[Math.floor(min - margin), Math.ceil(max + margin)]} />
           <Tooltip labelFormatter={d => moment(d).format("ll LTS")} />

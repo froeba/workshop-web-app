@@ -14,7 +14,7 @@ code {
   text-align: center;
 }
 body {
-  background-color: #282c34;
+  background-color: #fff;
 }
 .App-header {
   max-width: 100%;
@@ -40,5 +40,5 @@ body {
 h1,
 h2,
 h3 {
-  color: #fff;
+  color: #000;
 }

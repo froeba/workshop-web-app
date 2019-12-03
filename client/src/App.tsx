@@ -4,12 +4,13 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import superagent from "superagent";
 import { Devices, Names, Paths, ResourceValue } from ".";
 
-const PAUSE_FOR_POLL = 10 * 1000;
+const PAUSE_FOR_POLL = 1000;
 
 const deviceNames: Names = { "016e94466d7a000000000001001d1395": "Bert's device" };
 
 const resourceNames: Names = {
   "/3303/.*/5700": "Temperature sensor",
+  "/3304/.*/5700": "Relative humidity",
   "/3323/.*/5700": "Air pressure",
 };
 
@@ -19,7 +20,7 @@ const App: React.FC = () => {
 
   const getValues = () => {
     superagent
-      .get("/values")
+      .get("https://mbed-workshop.herokuapp.com/values")
       .then(parseValues)
       .catch(() => window.setTimeout(getValues, PAUSE_FOR_POLL));
   };

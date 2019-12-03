@@ -77,8 +77,8 @@ const App: React.FC = () => {
             <div className="App-graph">
               <div className="graph">{showPath(paths[res])}</div>
               <div className="value">
-                <h1>
-                  <span style={{ color: styleColour }}>{paths[res][0].value.toFixed(1)}</span>
+                <h1 title={moment(val1.time, "lll").toString()}>
+                  <span style={{ color: styleColour }}>{val1.value.toFixed(1)}</span>
                 </h1>
               </div>
             </div>

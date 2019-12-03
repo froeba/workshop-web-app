@@ -6,9 +6,10 @@ import { Devices, Names, Paths, ResourceValue } from ".";
 
 const PAUSE_FOR_POLL = 10 * 1000;
 
-const deviceNames: Names = {};
+const deviceNames: Names = { "016e94466d7a000000000001001d1395": "Bert's device" };
 
 const resourceNames: Names = {
+  "/3303/.*/5700": "Temperature sensor",
   "/3323/.*/5700": "Air pressure",
 };
 
@@ -89,11 +90,6 @@ const App: React.FC = () => {
     const max = Math.ceil(values.reduce((a, c) => (a ? (c.value > a ? c.value : a) : c.value), -Infinity));
     const min = Math.floor(values.reduce((a, c) => (c.value < a ? c.value : a), Infinity));
     const margin = Math.ceil((max - min) * 0.1);
-    const { time, value, device_id, path } = values[0];
-    const latest = { time, value, id: 0, device_id, path, epoch: Date.now() };
-    values.reverse();
-    values.push(latest);
-    values.reverse();
     return (
       <ResponsiveContainer aspect={21 / 9} minHeight={200}>
         <LineChart data={values}>

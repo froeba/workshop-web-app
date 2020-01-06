@@ -11,8 +11,14 @@ const deviceId = (process.env.DEVICE_ID || "*").split(",");
 console.log(`HOSTNAME=${hostName}`);
 console.log(`RESOURCE=${resourcePaths.join(",")}`);
 console.log(`DEVICE_ID=${deviceId.join(",")}`);
+console.log(`LONG_POLLING_ENABLED=${process.env.LONG_POLLING_ENABLED}`);
 
-export const setup = async (connect: ConnectApi, pool: Pool, notification: (n: NotificationData) => void) => {
+export const setup = async (
+  connect: ConnectApi,
+  pool: Pool,
+  notification: (n: NotificationData) => void,
+  longPolling: boolean = false
+) => {
   console.log("Updating table schema");
   try {
     const client = await pool.connect();
@@ -24,23 +30,20 @@ export const setup = async (connect: ConnectApi, pool: Pool, notification: (n: N
     console.error(err);
   }
 
-  console.log("Updating Webhook and subscriptions - " + webhookURI);
   try {
+    console.log("Updating subscriptions");
     await connect.deletePresubscriptions();
-    connect.subscribe
-      .resourceValues(
-        {
-          deviceId,
-          resourcePaths,
-        },
-        "OnValueUpdate"
-      )
-      .addListener(n => notification(n));
-    await connect.updateWebhook(webhookURI, {}, true);
+    connect.subscribe.resourceValues({ deviceId, resourcePaths }, "OnValueUpdate").addListener(n => notification(n));
+    if (longPolling) {
+      await connect.startNotifications();
+      console.log("Subscriptions updated, using long-polling");
+    } else {
+      await connect.updateWebhook(webhookURI, {}, true);
+      console.log(`Subscriptions updated, using Webhook "${webhookURI}"`);
+    }
   } catch (err) {
     console.error(err);
   }
 
-  console.log("Webhook and subscriptions updated");
   getValues(connect, notification);
 };

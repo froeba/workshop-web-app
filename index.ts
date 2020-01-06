@@ -6,6 +6,8 @@ import path from "path";
 import { Pool } from "pg";
 import { setup } from "./src/setup";
 
+export const LONG_POLLING_ENABLED: boolean = process.env.LONG_POLLING_ENABLED === "true";
+
 const PORT = process.env.PORT || 5000;
 
 const connect = new ConnectApi({
@@ -50,7 +52,12 @@ const notification = async ({ deviceId, path, payload }: NotificationData) => {
   }
 };
 
-express()
+/*
+  Set up the Express server.
+  Always register the `/values` and `*` endpoints.
+  Only register the `/callback` endpoint if using webhooks and not long polling.
+*/
+const expressServer = express()
   .use(express.static(path.join(__dirname, "client/build")))
   .use(express.json())
   .use((req, res, next) => {
@@ -66,7 +73,12 @@ express()
       res.send("Error" + err);
     }
   })
-  .all("/callback", async (req, res) => {
+  .get("*", (req, res) => {
+    res.sendFile(path.join(__dirname + "/client/build/index.html"));
+  });
+
+if (!LONG_POLLING_ENABLED) {
+  expressServer.all("/callback", async (req, res) => {
     try {
       connect.notify(req.body);
     } catch (err) {
@@ -74,11 +86,11 @@ express()
     } finally {
       res.sendStatus(204);
     }
-  })
-  .get("*", (req, res) => {
-    res.sendFile(path.join(__dirname + "/client/build/index.html"));
-  })
+  });
+}
+
+expressServer
   .listen(PORT, () => console.log(`Listening on ${PORT}`))
   .once("listening", () => {
-    setup(connect, pool, notification);
+    setup(connect, pool, notification, LONG_POLLING_ENABLED);
   });

@@ -34,9 +34,9 @@ Heroku apps provide configuration options through environment variables. These a
 | MBED_CLOUD_SDK_API_KEY | `APIKEY`                               |          |                                     |
 | HOSTNAME               | https://`APP`.herokuapp.com/           |          |                                     |
 | MBED_CLOUD_SDK_HOST    | `APIHOST`                              | ✓        | https://api.us-east-1.mbedcloud.com |
+| LONG_POLLING_ENABLED   | `true` or `false`                      | ✓        | `false`                             |
 | DEVICE_ID              | Comma separated list of device IDs     | ✓        | \*                                  |
 | RESOURCE               | Comma separated list of resource paths | ✓        | /3303/\*                            |
-
 
 ![](docs/app_config_vars.png)
 
@@ -48,7 +48,6 @@ This app requires access to a Postgres database to store resource values. Heroku
 1. Navigate to `Resources` -> `Add-ons`
 1. Search for `postgres` and attach a free "Hobby Dev" account
 
-
 ![](docs/app_postgres.png)
 
 ## Check for issues
@@ -58,7 +57,6 @@ The Heroku app deploys into `dynos` which are hosted containers running applicat
 - Start at `https://dashboard.heroku.com/apps/<APP>`
 - `More` button --> `View logs`
 - Logs should show no errors
-
 
 ![](docs/app_logs.png)
 

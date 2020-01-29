@@ -12,7 +12,7 @@
     "create-react-app": "^3.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "^3.2.0",
+    "react-scripts": "^3.3.0",
     "recharts": "^1.8.5",
     "superagent": "^5.1.1",
     "typescript": "^3.7.2"

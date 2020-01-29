@@ -60,12 +60,12 @@ const notification = async ({ deviceId, path, payload }: NotificationData) => {
 const expressServer = express()
   .use(express.static(path.join(__dirname, "client/build")))
   .use(express.json())
-  .use((req, res, next) => {
+  .use((_, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   })
-  .get("/values", async (req, res) => {
+  .get("/values", async (_, res) => {
     const query = "select * from resource_values order by time desc limit 10000;";
     try {
       res.send(await getQuery(query));
@@ -73,7 +73,7 @@ const expressServer = express()
       res.send("Error" + err);
     }
   })
-  .get("*", (req, res) => {
+  .get("*", (_, res) => {
     res.sendFile(path.join(__dirname + "/client/build/index.html"));
   });
 

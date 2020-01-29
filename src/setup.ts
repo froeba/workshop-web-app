@@ -15,6 +15,7 @@ const headers = { Authorization: `bearer ${apiKey}` };
 const subscriptionsUrl = new URL("/v2/subscriptions", apiUrl);
 const deviceDirectoryUrl = new URL("/v3/devices", apiUrl);
 const endpointsUrl = new URL("/v2/endpoints", apiUrl);
+const longPollUrl = new URL("/v2/notification/pull", apiUrl);
 
 console.log(`HOSTNAME=${hostName}`);
 console.log(`RESOURCE=${resourcePaths.join(",")}`);
@@ -110,7 +111,8 @@ export const setup = async (
     console.log("Subscriptions updated");
 
     if (longPolling) {
-      await connect.startNotifications();
+      // await connect.startNotifications();
+      startLongPoll(notification);
       console.log("Using long-polling");
     } else {
       await connect.updateWebhook(webhookURI, {}, true);
@@ -121,4 +123,28 @@ export const setup = async (
   }
 
   getValues(connect, notification);
+};
+
+const startLongPoll = (notification: (n: NotificationData) => void) => {
+  setTimeout(() => longPoll(notification), 0);
+};
+
+const longPoll = async (notification: (n: NotificationData) => void) => {
+  const result = await fetch(longPollUrl, { headers })
+    .then(checkStatus)
+    .then(r => r.json())
+    .catch(e => {
+      setTimeout(() => longPoll(notification), 5000);
+    });
+  setTimeout(() => longPoll(notification), 0);
+  handleNotification(result, notification);
+};
+
+const handleNotification = (result: any, notification: (n: NotificationData) => void) => {
+  const { notifications } = result;
+  if (notifications) {
+    notifications.forEach((n: any) =>
+      notification({ deviceId: n.ep, path: n.path, payload: Buffer.from(n.payload, "base64").toString() })
+    );
+  }
 };

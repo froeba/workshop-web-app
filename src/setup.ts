@@ -16,6 +16,7 @@ const subscriptionsUrl = new URL("/v2/subscriptions", apiUrl);
 const deviceDirectoryUrl = new URL("/v3/devices", apiUrl);
 const endpointsUrl = new URL("/v2/endpoints", apiUrl);
 const longPollUrl = new URL("/v2/notification/pull", apiUrl);
+const webhookUrl = new URL("/v2/notification/callback", apiUrl);
 
 console.log(`HOSTNAME=${hostName}`);
 console.log(`RESOURCE=${resourcePaths.join(",")}`);
@@ -110,12 +111,29 @@ export const setup = async (
       });
     console.log("Subscriptions updated");
 
+    await fetch(webhookUrl, { method: "DELETE", headers })
+      .then(checkStatus)
+      .catch(() => {});
+    console.log("Deleted old webhook");
+
     if (longPolling) {
-      // await connect.startNotifications();
       startLongPoll(notification);
       console.log("Using long-polling");
     } else {
-      await connect.updateWebhook(webhookURI, {}, true);
+      const webhookBody = {
+        url: webhookURI,
+        serialization: {
+          type: "v2",
+          cfg: {
+            include_timestamp: true,
+          },
+        },
+      };
+      await fetch(webhookUrl, {
+        headers: { ...headers, "content-type": "application/json" },
+        method: "PUT",
+        body: JSON.stringify(webhookBody),
+      }).then(checkStatus);
       console.log(`Using Webhook "${webhookURI}"`);
     }
   } catch (err) {

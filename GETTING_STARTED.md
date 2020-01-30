@@ -29,14 +29,14 @@ Heroku apps provide configuration options through environment variables. These a
 - Start at `https://dashboard.heroku.com/apps/<APP>`
 - `Manage App` --> `Settings` --> `Reveal Config Vars`
 
-| Key                    | Value                                  | Optional | Default                             |
-| ---------------------- | -------------------------------------- | -------- | ----------------------------------- |
-| MBED_CLOUD_SDK_API_KEY | `APIKEY`                               |          |                                     |
-| HOSTNAME               | https://`APP`.herokuapp.com/           |          |                                     |
-| MBED_CLOUD_SDK_HOST    | `APIHOST`                              | ✓        | https://api.us-east-1.mbedcloud.com |
-| LONG_POLLING_ENABLED   | `true` or `false`                      | ✓        | `false`                             |
-| DEVICE_ID              | Comma separated list of device IDs     | ✓        | \*                                  |
-| RESOURCE               | Comma separated list of resource paths | ✓        | /3303/\*                            |
+| Key                  | Value                                  | Optional | Default                             |
+| -------------------- | -------------------------------------- | -------- | ----------------------------------- |
+| API_KEY              | `APIKEY`                               |          |                                     |
+| HOSTNAME             | https://`APP`.herokuapp.com/           |          |                                     |
+| API_HOST             | `APIHOST`                              | ✓        | https://api.us-east-1.mbedcloud.com |
+| LONG_POLLING_ENABLED | `true` or `false`                      | ✓        | `false`                             |
+| DEVICE_ID            | Comma separated list of device IDs     | ✓        | \*                                  |
+| RESOURCE             | Comma separated list of resource paths | ✓        | /3303/\*                            |
 
 ![](docs/app_config_vars.png)
 

@@ -1,28 +1,19 @@
+require("dotenv").config();
 import express from "express";
-import { ConnectApi } from "mbed-cloud-sdk";
-import { NotificationData } from "mbed-cloud-sdk/types/legacy/connect/types";
 import moment from "moment";
 import path from "path";
 import { Pool } from "pg";
-import { setup } from "./src/setup";
+import { handleNotification, setup } from "./src/setup";
+import { AsyncRequest, NotificationData, Results } from "./src/types";
 
 export const LONG_POLLING_ENABLED: boolean = process.env.LONG_POLLING_ENABLED === "true";
 
 const PORT = process.env.PORT || 5000;
 
-const connect = new ConnectApi({
-  forceClear: true,
-  autostartNotifications: false,
-});
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
 });
-
-interface Results {
-  results: any[];
-}
 
 const getQuery = async (query = "select * from resource_values;") => {
   const results: Results = { results: [] };
@@ -33,8 +24,27 @@ const getQuery = async (query = "select * from resource_values;") => {
   return results;
 };
 
+const asyncRequests: AsyncRequest[] = [];
+
+export const storeAsync = (a: AsyncRequest) => {
+  asyncRequests.push(a);
+};
+
+export const removeAsync = (a: string): AsyncRequest | void => {
+  return asyncRequests.find((v, i, ar) => {
+    if (v.asyncId === a) {
+      asyncRequests.splice(i, 1);
+      return v;
+    }
+  });
+};
+
 const notification = async ({ deviceId, path, payload }: NotificationData) => {
   if (isNaN(payload as number)) {
+    return;
+  }
+  if (payload === "") {
+    console.log(`${deviceId} ${path} - Empty Payload`);
     return;
   }
   const text =
@@ -80,7 +90,7 @@ const expressServer = express()
 if (!LONG_POLLING_ENABLED) {
   expressServer.all("/callback", async (req, res) => {
     try {
-      connect.notify(req.body);
+      handleNotification(req.body, notification);
     } catch (err) {
       console.log(err.stack);
     } finally {
@@ -92,5 +102,5 @@ if (!LONG_POLLING_ENABLED) {
 expressServer
   .listen(PORT, () => console.log(`Listening on ${PORT}`))
   .once("listening", () => {
-    setup(connect, pool, notification, LONG_POLLING_ENABLED);
+    setup(pool, notification, LONG_POLLING_ENABLED);
   });

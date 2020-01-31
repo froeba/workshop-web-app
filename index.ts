@@ -1,4 +1,8 @@
-require("dotenv").config();
+/**
+ * Start up and run a webserver that connects to Pelion Device management
+ * Webhooks and long polling supported in this example as well as periodic polling of current values for resources
+ */
+require("dotenv").config(); // Use a .env file to configure environment variables when running locally
 import express from "express";
 import moment from "moment";
 import path from "path";
@@ -15,6 +19,10 @@ const pool = new Pool({
   ssl: true,
 });
 
+/**
+ * Request simple database actions
+ * @param query PostGres SQL statement
+ */
 const getQuery = async (query = "select * from resource_values;") => {
   const results: Results = { results: [] };
   const client = await pool.connect();
@@ -24,6 +32,11 @@ const getQuery = async (query = "select * from resource_values;") => {
   return results;
 };
 
+/**
+ * Device-requests API requires client code to manage and store unique async-ids
+ * for each request.  This is a basic list implementation to store this information
+ * and provide device id and resource path context to each async response
+ */
 const asyncRequests: AsyncRequest[] = [];
 
 export const storeAsync = (a: AsyncRequest) => {
@@ -39,6 +52,13 @@ export const removeAsync = (a: string): AsyncRequest | void => {
   });
 };
 
+/**
+ * Notifications from Pelion Device management are related to
+ * - DeviceID - the identifier of the device event has originated
+ * - Path - Resource path in LwM2M URI format where the resource information originated on device e.g. /3303/0/5700
+ * - Payload - Number or string value of the event from the device and resource.  Originates as base64 encoded string decoded in another handler
+ * @param param0 Notification data to be stored
+ */
 const notification = async ({ deviceId, path, payload }: NotificationData) => {
   if (isNaN(payload as number)) {
     return;
@@ -62,11 +82,11 @@ const notification = async ({ deviceId, path, payload }: NotificationData) => {
   }
 };
 
-/*
-  Set up the Express server.
-  Always register the `/values` and `*` endpoints.
-  Only register the `/callback` endpoint if using webhooks and not long polling.
-*/
+/**
+ * Set up the Express server.
+ * Always register the `/values` and `*` endpoints.
+ * Only register the `/callback` endpoint if using webhooks and not long polling.
+ */
 const expressServer = express()
   .use(express.static(path.join(__dirname, "client/build")))
   .use(express.json())
@@ -75,6 +95,7 @@ const expressServer = express()
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   })
+  // Provides stored values to the react web app contained in /client folder
   .get("/values", async (_, res) => {
     const query = "select * from resource_values order by time desc limit 10000;";
     try {
@@ -83,10 +104,12 @@ const expressServer = express()
       res.send("Error" + err);
     }
   })
+  // Serves the react web app in /client and built artifacts put into /client/build/
   .get("*", (_, res) => {
     res.sendFile(path.join(__dirname + "/client/build/index.html"));
   });
 
+// If using webhooks, provide a callback endpoint on the server for notifications
 if (!LONG_POLLING_ENABLED) {
   expressServer.all("/callback", async (req, res) => {
     try {
